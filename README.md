@@ -7,6 +7,8 @@ Super simple real-time multi-user paint app:
 - Draw with left click (white), erase with right click (black)
 - Network sends only changed pixels in batches
 
+![screenshot](./screenshot.png)
+
 See `PROTOCOL.md` for message format.
 
 ## Layout
