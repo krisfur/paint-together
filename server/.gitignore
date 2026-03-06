@@ -1,2 +1,6 @@
-build
+_build/
+build/
+deps/
+.elixir_ls/
+erl_crash.dump
 *.dump
