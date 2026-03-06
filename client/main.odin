@@ -12,6 +12,8 @@ PIXEL_COUNT   :: WINDOW_WIDTH * WINDOW_HEIGHT
 DEFAULT_WINDOW_WIDTH  :: 1280
 DEFAULT_WINDOW_HEIGHT :: 720
 
+LETTERBOX_BG :: rl.Color{32, 32, 32, 255}
+
 MSG_DRAW_BATCH :: u8(0x01)
 MSG_SNAPSHOT   :: u8(0x02)
 MSG_DELTA      :: u8(0x03)
@@ -400,11 +402,6 @@ main :: proc() {
 			mouse.x < offset_x + draw_w &&
 			mouse.y < offset_y + draw_h
 
-		if !mouse_in_canvas {
-			mx = int(mouse.x * f32(WINDOW_WIDTH) / f32(screen_w))
-			my = int(mouse.y * f32(WINDOW_HEIGHT) / f32(screen_h))
-		}
-
 		if mx < 0 {
 			mx = 0
 		} else if mx >= WINDOW_WIDTH {
@@ -416,7 +413,7 @@ main :: proc() {
 			my = WINDOW_HEIGHT - 1
 		}
 
-		left_down := connected && rl.IsMouseButtonDown(.LEFT)
+		left_down := connected && mouse_in_canvas && rl.IsMouseButtonDown(.LEFT)
 		if left_down {
 			if left_was_down {
 				paint_stroke(prev_left_x, prev_left_y, mx, my, 1, draw_brush_size, pixel_state, pixels, dirty_flags, &dirty_indices)
@@ -428,7 +425,7 @@ main :: proc() {
 		}
 		left_was_down = left_down
 
-		right_down := connected && rl.IsMouseButtonDown(.RIGHT)
+		right_down := connected && mouse_in_canvas && rl.IsMouseButtonDown(.RIGHT)
 		if right_down {
 			if right_was_down {
 				paint_stroke(prev_right_x, prev_right_y, mx, my, 0, erase_brush_size, pixel_state, pixels, dirty_flags, &dirty_indices)
@@ -465,7 +462,7 @@ main :: proc() {
 		rl.UpdateTexture(texture, raw_data(pixels))
 
 		rl.BeginDrawing()
-		rl.ClearBackground(rl.BLACK)
+		rl.ClearBackground(LETTERBOX_BG)
 		src := rl.Rectangle{0, 0, f32(WINDOW_WIDTH), f32(WINDOW_HEIGHT)}
 		dst := rl.Rectangle{offset_x, offset_y, draw_w, draw_h}
 		rl.DrawTexturePro(texture, src, dst, rl.Vector2{0, 0}, 0, rl.WHITE)
